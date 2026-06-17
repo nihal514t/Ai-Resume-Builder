@@ -1,13 +1,12 @@
 import { useEffect, useState } from "react";
-
 import { useAuth } from "../context/AuthContext";
-
 import { getResumes, createResume, deleteResume } from "../api/resumeApi";
+import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
   const { user, logout } = useAuth();
-
   const [resumes, setResumes] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchResumes = async () => {
@@ -67,6 +66,11 @@ const Dashboard = () => {
           <h3>{resume.title}</h3>
 
           <p>{resume.fullName}</p>
+
+          <button onClick={() => navigate(`/resume/${resume._id}`)}>
+            Edit
+          </button>
+
           <button onClick={() => handleDeleteResume(resume._id)}>Delete</button>
         </div>
       ))}
