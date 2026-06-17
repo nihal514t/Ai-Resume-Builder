@@ -1,15 +1,44 @@
-import { useState } from 'react'
+import { Routes, Route } from "react-router-dom";
 
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
+import Dashboard from "./pages/Dashboard";
+import ResumeEditor from "./pages/ResumeEditor";
 
+import ProtectedRoute from "./routes/ProtectedRoute";
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-   
-    </>
-  )
+    <Routes>
+      <Route
+        path="/login"
+        element={<Login />}
+      />
+
+      <Route
+        path="/signup"
+        element={<Signup />}
+      />
+
+      <Route
+        path="/"
+        element={
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/resume/:id"
+        element={
+          <ProtectedRoute>
+            <ResumeEditor />
+          </ProtectedRoute>
+        }
+      />
+    </Routes>
+  );
 }
 
-export default App
+export default App;

@@ -1,17 +1,17 @@
 import { useState } from "react";
-
 import { useNavigate } from "react-router-dom";
 
 import { useAuth } from "../context/AuthContext";
 
-const Login = () => {
+const Signup = () => {
   const [formData, setFormData] =
     useState({
+      name: "",
       email: "",
       password: "",
     });
 
-  const { login } = useAuth();
+  const { register } = useAuth();
 
   const navigate = useNavigate();
 
@@ -29,7 +29,7 @@ const Login = () => {
     e.preventDefault();
 
     try {
-      await login(formData);
+      await register(formData);
 
       navigate("/");
     } catch (error) {
@@ -39,11 +39,18 @@ const Login = () => {
 
   return (
     <div>
-      <h1>Login</h1>
+      <h1>Signup</h1>
 
       <form
         onSubmit={handleSubmit}
       >
+        <input
+          type="text"
+          name="name"
+          placeholder="Name"
+          onChange={handleChange}
+        />
+
         <input
           type="email"
           name="email"
@@ -59,11 +66,11 @@ const Login = () => {
         />
 
         <button type="submit">
-          Login
+          Signup
         </button>
       </form>
     </div>
   );
 };
 
-export default Login;
+export default Signup;
