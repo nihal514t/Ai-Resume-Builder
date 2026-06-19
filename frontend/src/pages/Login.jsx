@@ -1,15 +1,16 @@
 import { useState } from "react";
-
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 import { useAuth } from "../context/AuthContext";
 
+import Input from "../components/ui/Input";
+import Button from "../components/ui/Button";
+
 const Login = () => {
-  const [formData, setFormData] =
-    useState({
-      email: "",
-      password: "",
-    });
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
 
   const { login } = useAuth();
 
@@ -18,14 +19,11 @@ const Login = () => {
   const handleChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]:
-        e.target.value,
+      [e.target.name]: e.target.value,
     });
   };
 
-  const handleSubmit = async (
-    e
-  ) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
@@ -38,30 +36,52 @@ const Login = () => {
   };
 
   return (
-    <div>
-      <h1>Login</h1>
+    <div className="min-h-screen bg-slate-100 flex items-center justify-center px-4">
+      <div className="bg-white shadow-xl rounded-xl p-8 w-full max-w-md">
+        <h1 className="text-3xl font-bold text-center mb-2">
+          Welcome Back
+        </h1>
 
-      <form
-        onSubmit={handleSubmit}
-      >
-        <input
-          type="email"
-          name="email"
-          placeholder="Email"
-          onChange={handleChange}
-        />
+        <p className="text-slate-500 text-center mb-8">
+          Sign in to your account
+        </p>
 
-        <input
-          type="password"
-          name="password"
-          placeholder="Password"
-          onChange={handleChange}
-        />
+        <form
+          onSubmit={handleSubmit}
+          className="space-y-4"
+        >
+          <Input
+            type="email"
+            name="email"
+            placeholder="Email"
+            onChange={handleChange}
+          />
 
-        <button type="submit">
-          Login
-        </button>
-      </form>
+          <Input
+            type="password"
+            name="password"
+            placeholder="Password"
+            onChange={handleChange}
+          />
+
+          <Button
+            type="submit"
+            className="w-full"
+          >
+            Login
+          </Button>
+        </form>
+
+        <p className="text-center text-slate-500 mt-6">
+          Don't have an account?{" "}
+          <Link
+            to="/signup"
+            className="text-blue-600 font-medium"
+          >
+            Sign Up
+          </Link>
+        </p>
+      </div>
     </div>
   );
 };

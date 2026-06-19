@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
 //components
 import Button from "../components/ui/Button";
@@ -20,6 +20,8 @@ const ResumeEditor = () => {
   const { user } = useAuth();
 
   const [resume, setResume] = useState(null);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchResume = async () => {
@@ -64,6 +66,19 @@ const ResumeEditor = () => {
         <div className="grid lg:grid-cols-5 gap-8">
           <div className="lg:col-span-3 bg-white rounded-xl shadow p-6 max-h-[90vh] overflow-y-auto">
             <h1 className="text-3xl font-bold mb-6">Resume Editor</h1>
+
+            <div className="mb-6">
+              <button
+                onClick={() => navigate("/")}
+                className="
+      text-blue-600
+      hover:text-blue-800
+      font-medium
+    "
+              >
+                ← Back to Dashboard
+              </button>
+            </div>
 
             <Input
               type="text"
