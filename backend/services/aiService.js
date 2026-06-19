@@ -52,7 +52,10 @@ You are an expert resume writer.
 
 Generate a professional resume summary.
 
-Return only the summary.
+Return plain text only.
+Do not use markdown.
+Do not use headings.
+Do not use bullet points.
 
 Maximum 4 sentences.
 `,

@@ -1,11 +1,17 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
+//components
+import Button from "../components/ui/Button";
+import Input from "../components/ui/Input";
+import TextArea from "../components/ui/TextArea";
+
 import { useAuth } from "../context/AuthContext";
 
 import { getResumeById, updateResume } from "../api/resumeApi";
 import { improveDescription, generateSummary } from "../api/aiApi";
 
+import ResumePreview from "../components/ResumePreview";
 import { generateResumePDF } from "../utils/pdfGenerator";
 
 const ResumeEditor = () => {
@@ -53,432 +59,438 @@ const ResumeEditor = () => {
   }
 
   return (
-    <div>
-      <h1>Resume Editor</h1>
+    <div className="min-h-screen bg-slate-100 p-6">
+      <div className="max-w-7xl mx-auto">
+        <div className="grid lg:grid-cols-5 gap-8">
+          <div className="lg:col-span-3 bg-white rounded-xl shadow p-6 max-h-[90vh] overflow-y-auto">
+            <h1 className="text-3xl font-bold mb-6">Resume Editor</h1>
 
-      <input
-        type="text"
-        name="title"
-        value={resume.title || ""}
-        onChange={handleChange}
-        placeholder="Title"
-      />
+            <Input
+              type="text"
+              name="title"
+              value={resume.title || ""}
+              onChange={handleChange}
+              placeholder="Title"
+            />
 
-      <br />
+            <Input
+              type="text"
+              name="fullName"
+              value={resume.fullName || ""}
+              onChange={handleChange}
+              placeholder="Full Name"
+            />
 
-      <input
-        type="text"
-        name="fullName"
-        value={resume.fullName || ""}
-        onChange={handleChange}
-        placeholder="Full Name"
-      />
+            <Input
+              type="email"
+              name="email"
+              value={resume.email || ""}
+              onChange={handleChange}
+              placeholder="Email"
+            />
 
-      <br />
+            <Input
+              type="text"
+              name="phone"
+              value={resume.phone || ""}
+              onChange={handleChange}
+              placeholder="Phone"
+            />
 
-      <input
-        type="email"
-        name="email"
-        value={resume.email || ""}
-        onChange={handleChange}
-        placeholder="Email"
-      />
+            <Input
+              type="text"
+              name="location"
+              value={resume.location || ""}
+              onChange={handleChange}
+              placeholder="Location"
+            />
 
-      <br />
+            <TextArea
+              name="summary"
+              value={resume.summary || ""}
+              onChange={handleChange}
+              placeholder="Professional Summary"
+            />
 
-      <input
-        type="text"
-        name="phone"
-        value={resume.phone || ""}
-        onChange={handleChange}
-        placeholder="Phone"
-      />
+            <Button
+              className="bg-purple-600 hover:bg-purple-700"
+              onClick={async () => {
+                try {
+                  const result = await generateSummary(resume);
 
-      <br />
+                  const updatedResume = {
+                    ...resume,
+                    summary: result.summary,
+                  };
 
-      <input
-        type="text"
-        name="location"
-        value={resume.location || ""}
-        onChange={handleChange}
-        placeholder="Location"
-      />
+                  setResume(updatedResume);
 
-      <br />
+                  await updateResume(id, updatedResume, user.token);
 
-      <textarea
-        name="summary"
-        value={resume.summary || ""}
-        onChange={handleChange}
-        placeholder="Professional Summary"
-      />
+                  alert("Summary generated and saved");
+                } catch (error) {
+                  console.log(error);
+                }
+              }}
+            >
+              Generate Summary With AI
+            </Button>
 
-      <br />
-      <button
-        onClick={async () => {
-          try {
-            const result = await generateSummary(resume);
+            <h2 className="text-xl font-semibold mt-6 mb-3">Skills</h2>
 
-            const updatedResume = {
-              ...resume,
-              summary: result.summary,
-            };
+            {resume.skills?.map((skill, index) => (
+              <div key={index} className="mb-4">
+                <Input
+                  type="text"
+                  value={skill}
+                  onChange={(e) => {
+                    const updatedSkills = [...resume.skills];
 
-            setResume(updatedResume);
+                    updatedSkills[index] = e.target.value;
 
-            await updateResume(id, updatedResume, user.token);
+                    setResume({
+                      ...resume,
+                      skills: updatedSkills,
+                    });
+                  }}
+                />
 
-            alert("Summary generated and saved");
-          } catch (error) {
-            console.log(error);
-          }
-        }}
-      >
-        Generate Summary With AI
-      </button>
+                <Button
+                  className="bg-red-500 hover:bg-red-600 mt-2"
+                  onClick={() => {
+                    const updatedSkills = resume.skills.filter(
+                      (_, i) => i !== index,
+                    );
 
-      <br />
+                    setResume({
+                      ...resume,
+                      skills: updatedSkills,
+                    });
+                  }}
+                >
+                  Remove
+                </Button>
+              </div>
+            ))}
 
-      <h2>Skills</h2>
+            <div className="mt-4">
+              <Button
+                onClick={() =>
+                  setResume({
+                    ...resume,
+                    skills: [...(resume.skills || []), ""],
+                  })
+                }
+              >
+                Add Skill
+              </Button>
+            </div>
 
-      {resume.skills?.map((skill, index) => (
-        <div key={index}>
-          <input
-            type="text"
-            value={skill}
-            onChange={(e) => {
-              const updatedSkills = [...resume.skills];
+            <h2 className="text-xl font-semibold mt-6 mb-3">Projects</h2>
 
-              updatedSkills[index] = e.target.value;
+            {resume.projects?.map((project, index) => (
+              <div
+                key={index}
+                className="border rounded-lg p-4 mb-6 bg-slate-50"
+              >
+                <Input
+                  type="text"
+                  placeholder="Project Title"
+                  value={project.title}
+                  onChange={(e) => {
+                    const updatedProjects = [...resume.projects];
 
-              setResume({
-                ...resume,
-                skills: updatedSkills,
-              });
-            }}
-          />
+                    updatedProjects[index].title = e.target.value;
 
-          <button
-            onClick={() => {
-              const updatedSkills = resume.skills.filter((_, i) => i !== index);
+                    setResume({
+                      ...resume,
+                      projects: updatedProjects,
+                    });
+                  }}
+                />
 
-              setResume({
-                ...resume,
-                skills: updatedSkills,
-              });
-            }}
-          >
-            Remove
-          </button>
-        </div>
-      ))}
+                <TextArea
+                  placeholder="Description"
+                  value={project.description}
+                  onChange={(e) => {
+                    const updatedProjects = [...resume.projects];
 
-      <br />
+                    updatedProjects[index].description = e.target.value;
 
-      <button
-        onClick={() =>
-          setResume({
-            ...resume,
-            skills: [...(resume.skills || []), ""],
-          })
-        }
-      >
-        Add Skill
-      </button>
+                    setResume({
+                      ...resume,
+                      projects: updatedProjects,
+                    });
+                  }}
+                />
 
-      <br />
+                <div className="flex gap-3 mt-3">
+                  <Button
+                    className="bg-purple-600 hover:bg-purple-700"
+                    onClick={async () => {
+                      try {
+                        const result = await improveDescription(
+                          project.description,
+                        );
 
-      <h2>Projects</h2>
+                        const updatedProjects = [...resume.projects];
 
-      {resume.projects?.map((project, index) => (
-        <div key={index}>
-          <input
-            type="text"
-            placeholder="Project Title"
-            value={project.title}
-            onChange={(e) => {
-              const updatedProjects = [...resume.projects];
+                        updatedProjects[index].description = result.improved;
 
-              updatedProjects[index].title = e.target.value;
+                        const updatedResume = {
+                          ...resume,
+                          projects: updatedProjects,
+                        };
 
-              setResume({
-                ...resume,
-                projects: updatedProjects,
-              });
-            }}
-          />
+                        setResume(updatedResume);
 
-          <br />
+                        await updateResume(id, updatedResume, user.token);
 
-          <textarea
-            placeholder="Description"
-            value={project.description}
-            onChange={(e) => {
-              const updatedProjects = [...resume.projects];
+                        alert("AI improvement saved");
+                      } catch (error) {
+                        console.log(error);
+                      }
+                    }}
+                  >
+                    Improve With AI
+                  </Button>
 
-              updatedProjects[index].description = e.target.value;
+                  <Button
+                    className="bg-red-500 hover:bg-red-600"
+                    onClick={() => {
+                      const updatedProjects = resume.projects.filter(
+                        (_, i) => i !== index,
+                      );
 
-              setResume({
-                ...resume,
-                projects: updatedProjects,
-              });
-            }}
-          />
+                      setResume({
+                        ...resume,
+                        projects: updatedProjects,
+                      });
+                    }}
+                  >
+                    Remove Project
+                  </Button>
+                </div>
+              </div>
+            ))}
 
-          <br />
-
-          <button
-            onClick={async () => {
-              try {
-                const result = await improveDescription(project.description);
-
-                const updatedProjects = [...resume.projects];
-
-                updatedProjects[index].description = result.improved;
-
-                const updatedResume = {
+            <Button
+              onClick={() =>
+                setResume({
                   ...resume,
-                  projects: updatedProjects,
-                };
-
-                setResume(updatedResume);
-
-                await updateResume(id, updatedResume, user.token);
-
-                alert("AI improvement saved");
-              } catch (error) {
-                console.log(error);
+                  projects: [
+                    ...(resume.projects || []),
+                    {
+                      title: "",
+                      description: "",
+                      technologies: [],
+                    },
+                  ],
+                })
               }
-            }}
-          >
-            Improve With AI
-          </button>
+            >
+              Add Project
+            </Button>
 
-          <button
-            onClick={() => {
-              const updatedProjects = resume.projects.filter(
-                (_, i) => i !== index,
-              );
+            <h2 className="text-xl font-semibold mt-6 mb-3">Experience</h2>
 
-              setResume({
-                ...resume,
-                projects: updatedProjects,
-              });
-            }}
-          >
-            Remove Project
-          </button>
+            {resume.experience?.map((exp, index) => (
+              <div
+                key={index}
+                className="border rounded-lg p-4 mb-6 bg-slate-50"
+              >
+                <Input
+                  type="text"
+                  placeholder="Company"
+                  value={exp.company}
+                  onChange={(e) => {
+                    const updated = [...resume.experience];
+
+                    updated[index].company = e.target.value;
+
+                    setResume({
+                      ...resume,
+                      experience: updated,
+                    });
+                  }}
+                />
+
+                <Input
+                  type="text"
+                  placeholder="Role"
+                  value={exp.role}
+                  onChange={(e) => {
+                    const updated = [...resume.experience];
+
+                    updated[index].role = e.target.value;
+
+                    setResume({
+                      ...resume,
+                      experience: updated,
+                    });
+                  }}
+                />
+
+                <TextArea
+                  placeholder="Description"
+                  value={exp.description}
+                  onChange={(e) => {
+                    const updated = [...resume.experience];
+
+                    updated[index].description = e.target.value;
+
+                    setResume({
+                      ...resume,
+                      experience: updated,
+                    });
+                  }}
+                />
+
+                <Button
+                  className="bg-red-500 hover:bg-red-600"
+                  onClick={() => {
+                    const updated = resume.experience.filter(
+                      (_, i) => i !== index,
+                    );
+
+                    setResume({
+                      ...resume,
+                      experience: updated,
+                    });
+                  }}
+                >
+                  Remove Experience
+                </Button>
+              </div>
+            ))}
+
+            <Button
+              onClick={() =>
+                setResume({
+                  ...resume,
+                  experience: [
+                    ...(resume.experience || []),
+                    {
+                      company: "",
+                      role: "",
+                      description: "",
+                    },
+                  ],
+                })
+              }
+            >
+              Add Experience
+            </Button>
+
+            <h2 className="text-xl font-semibold mt-6 mb-3">Education</h2>
+
+            {resume.education?.map((edu, index) => (
+              <div
+                key={index}
+                className="border rounded-lg p-4 mb-6 bg-slate-50"
+              >
+                <Input
+                  type="text"
+                  placeholder="Institution"
+                  value={edu.institution}
+                  onChange={(e) => {
+                    const updated = [...resume.education];
+
+                    updated[index].institution = e.target.value;
+
+                    setResume({
+                      ...resume,
+                      education: updated,
+                    });
+                  }}
+                />
+
+                <Input
+                  type="text"
+                  placeholder="Degree"
+                  value={edu.degree}
+                  onChange={(e) => {
+                    const updated = [...resume.education];
+
+                    updated[index].degree = e.target.value;
+
+                    setResume({
+                      ...resume,
+                      education: updated,
+                    });
+                  }}
+                />
+
+                <Input
+                  type="text"
+                  placeholder="Year"
+                  value={edu.year}
+                  onChange={(e) => {
+                    const updated = [...resume.education];
+
+                    updated[index].year = e.target.value;
+
+                    setResume({
+                      ...resume,
+                      education: updated,
+                    });
+                  }}
+                />
+
+                <Button
+                  className="bg-red-500 hover:bg-red-600"
+                  onClick={() => {
+                    const updated = resume.education.filter(
+                      (_, i) => i !== index,
+                    );
+
+                    setResume({
+                      ...resume,
+                      education: updated,
+                    });
+                  }}
+                >
+                  Remove Education
+                </Button>
+              </div>
+            ))}
+
+            <Button
+              onClick={() =>
+                setResume({
+                  ...resume,
+                  education: [
+                    ...(resume.education || []),
+                    {
+                      institution: "",
+                      degree: "",
+                      year: "",
+                    },
+                  ],
+                })
+              }
+            >
+              Add Education
+            </Button>
+            <div className="flex flex-wrap gap-3 mt-8 pt-6 border-t">
+              <Button
+                className="bg-slate-700 hover:bg-slate-800"
+                onClick={() => generateResumePDF(resume)}
+              >
+                Export PDF
+              </Button>
+
+              <Button onClick={handleSave}>Save Resume</Button>
+            </div>
+          </div>
+
+          <div className="lg:col-span-2">
+            <div className="bg-white rounded-xl shadow p-6 sticky top-6">
+              <ResumePreview resume={resume} />
+            </div>
+          </div>
         </div>
-      ))}
-
-      <button
-        onClick={() =>
-          setResume({
-            ...resume,
-            projects: [
-              ...(resume.projects || []),
-              {
-                title: "",
-                description: "",
-                technologies: [],
-              },
-            ],
-          })
-        }
-      >
-        Add Project
-      </button>
-
-      <br />
-      <h2>Experience</h2>
-
-      {resume.experience?.map((exp, index) => (
-        <div key={index}>
-          <input
-            type="text"
-            placeholder="Company"
-            value={exp.company}
-            onChange={(e) => {
-              const updated = [...resume.experience];
-
-              updated[index].company = e.target.value;
-
-              setResume({
-                ...resume,
-                experience: updated,
-              });
-            }}
-          />
-
-          <br />
-
-          <input
-            type="text"
-            placeholder="Role"
-            value={exp.role}
-            onChange={(e) => {
-              const updated = [...resume.experience];
-
-              updated[index].role = e.target.value;
-
-              setResume({
-                ...resume,
-                experience: updated,
-              });
-            }}
-          />
-
-          <br />
-
-          <textarea
-            placeholder="Description"
-            value={exp.description}
-            onChange={(e) => {
-              const updated = [...resume.experience];
-
-              updated[index].description = e.target.value;
-
-              setResume({
-                ...resume,
-                experience: updated,
-              });
-            }}
-          />
-
-          <br />
-
-          <button
-            onClick={() => {
-              const updated = resume.experience.filter((_, i) => i !== index);
-
-              setResume({
-                ...resume,
-                experience: updated,
-              });
-            }}
-          >
-            Remove Experience
-          </button>
-        </div>
-      ))}
-
-      <br />
-      <button
-        onClick={() =>
-          setResume({
-            ...resume,
-            experience: [
-              ...(resume.experience || []),
-              {
-                company: "",
-                role: "",
-                description: "",
-              },
-            ],
-          })
-        }
-      >
-        Add Experience
-      </button>
-
-      <br />
-
-      <h2>Education</h2>
-
-      {resume.education?.map((edu, index) => (
-        <div key={index}>
-          <input
-            type="text"
-            placeholder="Institution"
-            value={edu.institution}
-            onChange={(e) => {
-              const updated = [...resume.education];
-
-              updated[index].institution = e.target.value;
-
-              setResume({
-                ...resume,
-                education: updated,
-              });
-            }}
-          />
-
-          <br />
-
-          <input
-            type="text"
-            placeholder="Degree"
-            value={edu.degree}
-            onChange={(e) => {
-              const updated = [...resume.education];
-
-              updated[index].degree = e.target.value;
-
-              setResume({
-                ...resume,
-                education: updated,
-              });
-            }}
-          />
-
-          <br />
-
-          <input
-            type="text"
-            placeholder="Year"
-            value={edu.year}
-            onChange={(e) => {
-              const updated = [...resume.education];
-
-              updated[index].year = e.target.value;
-
-              setResume({
-                ...resume,
-                education: updated,
-              });
-            }}
-          />
-
-          <br />
-
-          <button
-            onClick={() => {
-              const updated = resume.education.filter((_, i) => i !== index);
-
-              setResume({
-                ...resume,
-                education: updated,
-              });
-            }}
-          >
-            Remove Education
-          </button>
-        </div>
-      ))}
-
-      <button
-        onClick={() =>
-          setResume({
-            ...resume,
-            education: [
-              ...(resume.education || []),
-              {
-                institution: "",
-                degree: "",
-                year: "",
-              },
-            ],
-          })
-        }
-      >
-        Add Education
-      </button>
-      <br />
-      <button onClick={() => generateResumePDF(resume)}>Export PDF</button>
-
-      <br />
-
-      <button onClick={handleSave}>Save Resume</button>
+      </div>
     </div>
   );
 };
