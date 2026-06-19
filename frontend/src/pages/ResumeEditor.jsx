@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 //components
 import Button from "../components/ui/Button";
@@ -20,6 +21,7 @@ const ResumeEditor = () => {
   const { user } = useAuth();
 
   const [resume, setResume] = useState(null);
+
 
   const navigate = useNavigate();
 
@@ -50,7 +52,7 @@ const ResumeEditor = () => {
 
       setResume(updated);
 
-      alert("Resume Saved");
+      toast.success("Resume Saved");
     } catch (error) {
       console.log(error);
     }
@@ -78,6 +80,44 @@ const ResumeEditor = () => {
               >
                 ← Back to Dashboard
               </button>
+            </div>
+
+            <div className="mb-6">
+              <label className="block mb-2 font-medium">Template</label>
+
+              <select
+                value={resume.template || "modern"}
+                onChange={async (e) => {
+                  try {
+                    const updatedResume = {
+                      ...resume,
+                      template: e.target.value,
+                    };
+
+                    setResume(updatedResume);
+
+                    await updateResume(id, updatedResume, user.token);
+
+                    toast.success("Template updated");
+                  } catch (error) {
+                    console.log(error);
+                  }
+                }}
+                className="
+      w-full
+      border
+      rounded-lg
+      px-3
+      py-2
+      bg-white
+    "
+              >
+                <option value="modern">Modern</option>
+
+                <option value="professional">Professional</option>
+
+                <option value="minimal">Minimal</option>
+              </select>
             </div>
 
             <Input
@@ -142,7 +182,7 @@ const ResumeEditor = () => {
 
                   await updateResume(id, updatedResume, user.token);
 
-                  alert("Summary generated and saved");
+                  toast.success("Summary generated");
                 } catch (error) {
                   console.log(error);
                 }
@@ -261,7 +301,7 @@ const ResumeEditor = () => {
 
                         await updateResume(id, updatedResume, user.token);
 
-                        alert("AI improvement saved");
+                        toast.success("Project improved");
                       } catch (error) {
                         console.log(error);
                       }
@@ -501,7 +541,7 @@ const ResumeEditor = () => {
 
           <div className="lg:col-span-2">
             <div className="bg-white rounded-xl shadow p-6 sticky top-6">
-              <ResumePreview resume={resume} />
+              <ResumePreview resume={resume} template={resume.template} />
             </div>
           </div>
         </div>

@@ -48,13 +48,14 @@ const resumeSchema = new mongoose.Schema(
     ],
 
     skills: [String],
+    template: {
+      type: String,
+      default: "modern",
+    },
   },
   {
     timestamps: true,
-  }
+  },
 );
 
-module.exports = mongoose.model(
-  "Resume",
-  resumeSchema
-);
+module.exports = mongoose.model("Resume", resumeSchema);

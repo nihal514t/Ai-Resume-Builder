@@ -1,4 +1,5 @@
 import { Routes, Route } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
 
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
@@ -9,35 +10,35 @@ import ProtectedRoute from "./routes/ProtectedRoute";
 
 function App() {
   return (
-    <Routes>
-      <Route
-        path="/login"
-        element={<Login />}
-      />
+    <>
+      <Toaster />
 
-      <Route
-        path="/signup"
-        element={<Signup />}
-      />
+      <Routes>{/* routes */}</Routes>
 
-      <Route
-        path="/"
-        element={
-          <ProtectedRoute>
-            <Dashboard />
-          </ProtectedRoute>
-        }
-      />
+      <Routes>
+        <Route path="/login" element={<Login />} />
 
-      <Route
-        path="/resume/:id"
-        element={
-          <ProtectedRoute>
-            <ResumeEditor />
-          </ProtectedRoute>
-        }
-      />
-    </Routes>
+        <Route path="/signup" element={<Signup />} />
+
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/resume/:id"
+          element={
+            <ProtectedRoute>
+              <ResumeEditor />
+            </ProtectedRoute>
+          }
+        />
+      </Routes>
+    </>
   );
 }
 
