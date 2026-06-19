@@ -2,21 +2,21 @@ const ResumePreview = ({ resume }) => {
   if (!resume) return null;
 
   return (
-    <div className="bg-white rounded-xl shadow-lg p-8 sticky top-6">
-      <div className="border-b pb-4 mb-6">
-        <h1 className="text-4xl font-bold text-gray-800">{resume.fullName}</h1>
+    <div className="bg-white rounded-xl shadow-xl p-10 sticky top-6">
+      <div className="border-b pb-6 mb-6 text-center">
+        <h1 className="text-4xl font-bold text-slate-900">{resume.fullName}</h1>
 
-        <div className="mt-2 text-gray-600 text-sm">
-          <div className="flex flex-wrap gap-4 text-slate-500 text-sm mt-2">
-            <span>{resume.email}</span>
-            <span>{resume.phone}</span>
-            <span>{resume.location}</span>
-          </div>
+        <p className="text-lg text-slate-500 mt-2">{resume.title}</p>
+
+        <div className="flex flex-wrap justify-center gap-4 text-slate-500 text-sm mt-3">
+          {resume.email && <span>{resume.email}</span>}
+          {resume.phone && <span>{resume.phone}</span>}
+          {resume.location && <span>{resume.location}</span>}
         </div>
       </div>
 
       <section className="mb-6">
-        <h2 className="text-xl font-semibold border-b mb-2">
+        <h2 className="text-xl font-bold border-b border-slate-300 mb-3 pb-1 text-slate-800">
           Professional Summary
         </h2>
 
@@ -24,7 +24,7 @@ const ResumePreview = ({ resume }) => {
       </section>
       {resume.skills?.length > 0 && (
         <section className="mb-6">
-          <h2 className="text-xl font-semibold border-b mb-2">Skills</h2>
+          <h2 className="text-xl font-bold border-b border-slate-300 mb-3 pb-1 text-slate-800">Skills</h2>
 
           <div className="flex flex-wrap gap-2">
             {resume.skills?.map((skill, index) => (
@@ -48,10 +48,10 @@ const ResumePreview = ({ resume }) => {
 
       {resume.projects?.length > 0 && (
         <section className="mb-6">
-          <h2 className="text-xl font-semibold border-b mb-2">Projects</h2>
+          <h2 className="text-xl font-bold border-b border-slate-300 mb-3 pb-1 text-slate-800">Projects</h2>
 
           {resume.projects?.map((project, index) => (
-            <div key={index} className="mb-4">
+            <div key={index} className="mb-5 border-l-4 border-blue-500 pl-4">
               <h3 className="font-semibold text-lg">{project.title}</h3>
 
               <p className="text-gray-700">{project.description}</p>
@@ -62,10 +62,10 @@ const ResumePreview = ({ resume }) => {
 
       {resume.experience?.length > 0 && (
         <section className="mb-6">
-          <h2 className="text-xl font-semibold border-b mb-2">Experience</h2>
+          <h2 className="text-xl font-bold border-b border-slate-300 mb-3 pb-1 text-slate-800">Experience</h2>
 
           {resume.experience.map((exp, index) => (
-            <div key={index} className="mb-4">
+            <div key={index} className="mb-5 border-l-4 border-green-500 pl-4">
               <h3 className="font-semibold">{exp.role}</h3>
 
               <p className="text-gray-600">{exp.company}</p>
@@ -78,10 +78,10 @@ const ResumePreview = ({ resume }) => {
 
       {resume.education?.length > 0 && (
         <section>
-          <h2 className="text-xl font-semibold border-b mb-2">Education</h2>
+          <h2 className="text-xl font-bold border-b border-slate-300 mb-3 pb-1 text-slate-800">Education</h2>
 
           {resume.education?.map((edu, index) => (
-            <div key={index} className="mb-4">
+            <div key={index} className="mb-5 border-l-4 border-purple-500 pl-4">
               <h3 className="font-semibold">{edu.degree}</h3>
 
               <p>{edu.institution}</p>
