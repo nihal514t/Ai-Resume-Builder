@@ -21,7 +21,9 @@ const ResumeEditor = () => {
   const { user } = useAuth();
 
   const [resume, setResume] = useState(null);
-
+  const [saving, setSaving] = useState(false);
+  const [generatingSummary, setGeneratingSummary] = useState(false);
+  const [improving, setImproving] = useState(null);
 
   const navigate = useNavigate();
 
@@ -48,6 +50,8 @@ const ResumeEditor = () => {
 
   const handleSave = async () => {
     try {
+      setSaving(true);
+
       const updated = await updateResume(id, resume, user.token);
 
       setResume(updated);
@@ -55,6 +59,10 @@ const ResumeEditor = () => {
       toast.success("Resume Saved");
     } catch (error) {
       console.log(error);
+
+      toast.error("Failed to save");
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -169,8 +177,11 @@ const ResumeEditor = () => {
 
             <Button
               className="bg-purple-600 hover:bg-purple-700"
+              disabled={generatingSummary}
               onClick={async () => {
                 try {
+                  setGeneratingSummary(true);
+
                   const result = await generateSummary(resume);
 
                   const updatedResume = {
@@ -185,10 +196,14 @@ const ResumeEditor = () => {
                   toast.success("Summary generated");
                 } catch (error) {
                   console.log(error);
+
+                  toast.error("Failed to generate summary");
+                } finally {
+                  setGeneratingSummary(false);
                 }
               }}
             >
-              Generate Summary With AI
+              {generatingSummary ? "Generating..." : "Generate Summary With AI"}
             </Button>
 
             <h2 className="text-xl font-semibold mt-6 mb-3">Skills</h2>
@@ -282,8 +297,11 @@ const ResumeEditor = () => {
                 <div className="flex gap-3 mt-3">
                   <Button
                     className="bg-purple-600 hover:bg-purple-700"
+                    disabled={improving}
                     onClick={async () => {
                       try {
+                        setImproving(true);
+
                         const result = await improveDescription(
                           project.description,
                         );
@@ -304,10 +322,14 @@ const ResumeEditor = () => {
                         toast.success("Project improved");
                       } catch (error) {
                         console.log(error);
+
+                        toast.error("Failed to improve project");
+                      } finally {
+                        setImproving(false);
                       }
                     }}
                   >
-                    Improve With AI
+                    {improving ? "Improving..." : "Improve With AI"}
                   </Button>
 
                   <Button
@@ -535,7 +557,9 @@ const ResumeEditor = () => {
                 Export PDF
               </Button>
 
-              <Button onClick={handleSave}>Save Resume</Button>
+              <Button onClick={handleSave} disabled={saving}>
+                {saving ? "Saving..." : "Save Resume"}
+              </Button>
             </div>
           </div>
 

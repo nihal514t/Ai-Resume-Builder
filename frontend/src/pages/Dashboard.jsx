@@ -2,13 +2,15 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { getResumes, createResume, deleteResume } from "../api/resumeApi";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 import Button from "../components/ui/Button";
-
 
 const Dashboard = () => {
   const { user, logout } = useAuth();
   const [resumes, setResumes] = useState([]);
+  const [creating, setCreating] = useState(false);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -24,8 +26,11 @@ const Dashboard = () => {
 
     fetchResumes();
   }, []);
+
   const handleCreateResume = async () => {
     try {
+      setCreating(true);
+
       const resume = await createResume(
         {
           title: "Untitled Resume",
@@ -36,8 +41,14 @@ const Dashboard = () => {
       );
 
       setResumes([...resumes, resume]);
+
+      toast.success("Resume created");
     } catch (error) {
       console.log(error);
+
+      toast.error("Failed to create resume");
+    } finally {
+      setCreating(false);
     }
   };
 
@@ -70,55 +81,44 @@ const Dashboard = () => {
         <Button
           className="mb-6 bg-green-600 hover:bg-green-700"
           onClick={handleCreateResume}
+          disabled={creating}
         >
-          Create Resume
+          {creating ? "Creating..." : "Create Resume"}
         </Button>
 
-        <h2 className="text-2xl font-bold mb-4">
-  My Resumes
-</h2>
+        <h2 className="text-2xl font-bold mb-4">My Resumes</h2>
 
-<div className="space-y-4">
-  {resumes.map((resume) => (
-    <div
-      key={resume._id}
-      className="
+        <div className="space-y-4">
+          {resumes.map((resume) => (
+            <div
+              key={resume._id}
+              className="
       bg-white
       rounded-xl
       shadow
       p-5
       border
       "
-    >
-      <h3 className="text-xl font-semibold">
-        {resume.title}
-      </h3>
+            >
+              <h3 className="text-xl font-semibold">{resume.title}</h3>
 
-      <p className="text-slate-500 mt-1">
-        {resume.fullName}
-      </p>
+              <p className="text-slate-500 mt-1">{resume.fullName}</p>
 
-      <div className="flex gap-3 mt-4">
-        <Button
-          onClick={() =>
-            navigate(`/resume/${resume._id}`)
-          }
-        >
-          Edit
-        </Button>
+              <div className="flex gap-3 mt-4">
+                <Button onClick={() => navigate(`/resume/${resume._id}`)}>
+                  Edit
+                </Button>
 
-        <Button
-          className="bg-red-500 hover:bg-red-600"
-          onClick={() =>
-            handleDeleteResume(resume._id)
-          }
-        >
-          Delete
-        </Button>
-      </div>
-    </div>
-  ))}
-</div>
+                <Button
+                  className="bg-red-500 hover:bg-red-600"
+                  onClick={() => handleDeleteResume(resume._id)}
+                >
+                  Delete
+                </Button>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
