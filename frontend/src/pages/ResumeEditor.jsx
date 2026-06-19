@@ -4,8 +4,9 @@ import { useParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 import { getResumeById, updateResume } from "../api/resumeApi";
-
 import { improveDescription, generateSummary } from "../api/aiApi";
+
+import { generateResumePDF } from "../utils/pdfGenerator";
 
 const ResumeEditor = () => {
   const { id } = useParams();
@@ -473,6 +474,8 @@ const ResumeEditor = () => {
         Add Education
       </button>
       <br />
+      <button onClick={() => generateResumePDF(resume)}>Export PDF</button>
+
       <br />
 
       <button onClick={handleSave}>Save Resume</button>
