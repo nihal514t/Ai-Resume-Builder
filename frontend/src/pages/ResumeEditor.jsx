@@ -5,6 +5,8 @@ import { useAuth } from "../context/AuthContext";
 
 import { getResumeById, updateResume } from "../api/resumeApi";
 
+import { improveDescription, generateSummary } from "../api/aiApi";
+
 const ResumeEditor = () => {
   const { id } = useParams();
 
@@ -111,6 +113,30 @@ const ResumeEditor = () => {
       />
 
       <br />
+      <button
+        onClick={async () => {
+          try {
+            const result = await generateSummary(resume);
+
+            const updatedResume = {
+              ...resume,
+              summary: result.summary,
+            };
+
+            setResume(updatedResume);
+
+            await updateResume(id, updatedResume, user.token);
+
+            alert("Summary generated and saved");
+          } catch (error) {
+            console.log(error);
+          }
+        }}
+      >
+        Generate Summary With AI
+      </button>
+
+      <br />
 
       <h2>Skills</h2>
 
@@ -199,6 +225,33 @@ const ResumeEditor = () => {
           />
 
           <br />
+
+          <button
+            onClick={async () => {
+              try {
+                const result = await improveDescription(project.description);
+
+                const updatedProjects = [...resume.projects];
+
+                updatedProjects[index].description = result.improved;
+
+                const updatedResume = {
+                  ...resume,
+                  projects: updatedProjects,
+                };
+
+                setResume(updatedResume);
+
+                await updateResume(id, updatedResume, user.token);
+
+                alert("AI improvement saved");
+              } catch (error) {
+                console.log(error);
+              }
+            }}
+          >
+            Improve With AI
+          </button>
 
           <button
             onClick={() => {
@@ -402,7 +455,6 @@ const ResumeEditor = () => {
         </div>
       ))}
 
-      
       <button
         onClick={() =>
           setResume({

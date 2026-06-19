@@ -1,13 +1,14 @@
+const dotenv = require("dotenv");
+dotenv.config();
+
 const express = require("express");
 const cors = require("cors");
-const dotenv = require("dotenv");
 
 const connectDB = require("./config/db");
 
 const authRoutes = require("./routes/authRoutes");
 const resumeRoutes = require("./routes/resumeRoutes");
-
-dotenv.config();
+const aiRoutes = require("./routes/aiRoutes");
 
 connectDB();
 
@@ -25,6 +26,7 @@ app.get("/", (req, res) => {
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/resumes", resumeRoutes);
+app.use("/api/ai", aiRoutes);
 
 // Start Server
 const PORT = process.env.PORT || 8000;
